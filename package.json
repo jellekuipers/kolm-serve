@@ -1,0 +1,34 @@
+{
+	"name": "kolm-serve",
+	"type": "module",
+	"scripts": {
+		"build": "tsc",
+		"db:generate": "drizzle-kit generate",
+		"db:migrate": "drizzle-kit migrate",
+		"db:push": "drizzle-kit push",
+		"db:reset": "npx tsx src/db/reset.ts ",
+		"db:seed": "npx tsx src/db/seed.ts ",
+		"db:seed:dev": "npx tsx src/db/seed.dev.ts ",
+		"db:studio": "drizzle-kit studio",
+		"dev": "tsx watch src/index.ts"
+	},
+	"dependencies": {
+		"@hono/node-server": "1.14.0",
+		"@hono/trpc-server": "0.3.4",
+		"@trpc/server": "11.0.1",
+		"better-auth": "1.2.5",
+		"dotenv": "16.4.7",
+		"drizzle-orm": "0.41.0",
+		"drizzle-seed": "0.3.1",
+		"hono": "4.7.5",
+		"pg": "8.14.1",
+		"superjson": "2.2.2"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "1.9.4",
+		"@types/node": "20.11.17",
+		"drizzle-kit": "^0.30.6",
+		"tsx": "4.7.1",
+		"typescript": "^5.8.2"
+	}
+}
