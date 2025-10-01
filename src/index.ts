@@ -2,6 +2,7 @@ import { serve } from "@hono/node-server";
 import { trpcServer } from "@hono/trpc-server";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
+import { logger } from "hono/logger";
 
 import { auth } from "./lib/auth.js";
 import { createTRPCContext } from "./trpc/init.js";
@@ -9,20 +10,27 @@ import { appRouter } from "./trpc/router/index.js";
 
 const app = new Hono();
 
+app.use("*", logger());
+
 app.use(
-  "/api/*",
+  "*",
   cors({
+    origin: "*",
+    allowHeaders: ["Content-Type", "Authorization"],
     allowMethods: ["POST", "GET", "OPTIONS"],
+    exposeHeaders: ["Content-Length"],
+    maxAge: 600,
     credentials: true,
-    origin: ["http://example.com"],
   }),
 );
 
-app.on(["POST", "GET"], "/api/auth/*", (c) => {
+const api = new Hono();
+
+api.on(["POST", "GET"], "/auth/*", (c) => {
   return auth.handler(c.req.raw);
 });
 
-app.use("/api/trpc/*", (c, next) =>
+api.use("/trpc/*", (c, next) =>
   trpcServer({
     createContext: (_opts, c) => createTRPCContext(c),
     endpoint: "/api/trpc",
@@ -30,9 +38,11 @@ app.use("/api/trpc/*", (c, next) =>
   })(c, next),
 );
 
-app.get("/api/health", (c) => {
+api.get("/health", (c) => {
   return c.text("ok");
 });
+
+app.route("/api", api);
 
 serve(
   {
